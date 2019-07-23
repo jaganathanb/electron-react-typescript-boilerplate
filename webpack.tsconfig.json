@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "allowJs": true,
+    "target": "es5",
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "moduleResolution": "node",
+    "jsx": "react",
+    "lib": ["es2017", "es2015", "dom", "es6"],
+    "allowSyntheticDefaultImports": true
+  },
+  "exclude": ["node_modules", "test/**/*.ts", "test/**/*.tsx", "dll"]
+}
