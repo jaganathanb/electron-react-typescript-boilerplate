@@ -2,6 +2,7 @@
  * Base webpack config used across other specific configs
  */
 
+import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import path from 'path';
 import webpack from 'webpack';
 import { dependencies } from '../package.json';
@@ -12,14 +13,20 @@ export default {
   module: {
     rules: [
       {
-        test: /\.jsx?$/,
+        test: /\.(j|t)sx?$/,
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
           options: {
-            cacheDirectory: true
+            cacheDirectory: true,
+            plugins: ['react-hot-loader/babel']
           }
         }
+      },
+      {
+        test: /\.jsx?$/,
+        use: ['source-map-loader'],
+        enforce: 'pre'
       }
     ]
   },
@@ -34,7 +41,10 @@ export default {
    * Determine the array of extensions that should be used to resolve modules.
    */
   resolve: {
-    extensions: ['.js', '.jsx', '.json']
+    extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
+    alias: {
+      'react-dom': '@hot-loader/react-dom'
+    }
   },
 
   plugins: [
@@ -42,6 +52,10 @@ export default {
       NODE_ENV: 'production'
     }),
 
-    new webpack.NamedModulesPlugin()
+    new webpack.NamedModulesPlugin(),
+
+    new ForkTsCheckerWebpackPlugin({
+      eslint: true
+    })
   ]
 };

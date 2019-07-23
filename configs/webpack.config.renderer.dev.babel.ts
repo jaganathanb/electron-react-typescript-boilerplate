@@ -7,18 +7,18 @@
  * https://webpack.js.org/concepts/hot-module-replacement/
  */
 
-import path from 'path';
-import fs from 'fs';
-import webpack from 'webpack';
 import chalk from 'chalk';
+import { execSync, spawn } from 'child_process';
+import fs from 'fs';
+import path from 'path';
+import webpack from 'webpack';
 import merge from 'webpack-merge';
-import { spawn, execSync } from 'child_process';
-import baseConfig from './webpack.config.base';
 import CheckNodeEnv from '../internals/scripts/CheckNodeEnv';
+import baseConfig from './webpack.config.base';
 
 CheckNodeEnv('development');
 
-const port = process.env.PORT || 1212;
+const port = parseInt(process.env.PORT || '1212');
 const publicPath = `http://localhost:${port}/dist`;
 const dll = path.join(__dirname, '..', 'dll');
 const manifest = path.resolve(dll, 'renderer.json');
@@ -30,6 +30,7 @@ const requiredByDLLConfig = module.parent.filename.includes(
  * Warn if the DLL is not built
  */
 if (!requiredByDLLConfig && !(fs.existsSync(dll) && fs.existsSync(manifest))) {
+  // eslint-disable-next-line no-console
   console.log(
     chalk.black.bgYellow.bold(
       'The DLL files are missing. Sit back while we build them for you with "yarn build-dll"'
@@ -38,7 +39,7 @@ if (!requiredByDLLConfig && !(fs.existsSync(dll) && fs.existsSync(manifest))) {
   execSync('yarn build-dll');
 }
 
-export default merge.smart(baseConfig, {
+export default merge.smart(baseConfig as any, {
   devtool: 'inline-source-map',
 
   mode: 'development',
@@ -49,7 +50,7 @@ export default merge.smart(baseConfig, {
     ...(process.env.PLAIN_HMR ? [] : ['react-hot-loader/patch']),
     `webpack-dev-server/client?http://localhost:${port}/`,
     'webpack/hot/only-dev-server',
-    require.resolve('../app/index')
+    require.resolve('../app/index.tsx')
   ],
 
   output: {
@@ -60,14 +61,20 @@ export default merge.smart(baseConfig, {
   module: {
     rules: [
       {
-        test: /\.jsx?$/,
+        test: /\.(j|t)sx?$/,
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
           options: {
-            cacheDirectory: true
+            cacheDirectory: true,
+            plugins: ['react-hot-loader/babel']
           }
         }
+      },
+      {
+        test: /\.jsx?$/,
+        use: ['source-map-loader'],
+        enforce: 'pre'
       },
       {
         test: /\.global\.css$/,
@@ -253,12 +260,10 @@ export default merge.smart(baseConfig, {
       ignored: /node_modules/,
       poll: 100
     },
-    historyApiFallback: {
-      verbose: true,
-      disableDotRule: false
-    },
+    historyApiFallback: true,
     before() {
       if (process.env.START_HOT) {
+        // eslint-disable-next-line no-console
         console.log('Starting Main Process...');
         spawn('npm', ['run', 'start-main-dev'], {
           shell: true,
@@ -266,6 +271,7 @@ export default merge.smart(baseConfig, {
           stdio: 'inherit'
         })
           .on('close', code => process.exit(code))
+          // eslint-disable-next-line no-console
           .on('error', spawnError => console.error(spawnError));
       }
     }

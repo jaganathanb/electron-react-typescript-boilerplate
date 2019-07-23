@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import detectPort = require('detect-port');
+import detectPort from 'detect-port';
 
 (function CheckPortInUse() {
   const port = parseInt(process.env.PORT || '1212');

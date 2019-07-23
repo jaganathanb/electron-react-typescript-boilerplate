@@ -23,11 +23,18 @@ module.exports = api => {
       [
         require('@babel/preset-env'),
         {
-          targets: { electron: require('electron/package.json').version },
-          useBuiltIns: 'usage'
+          targets: {
+            electron: require('electron/package.json').version,
+            browsers: 'last 2 versions'
+          },
+          useBuiltIns: 'usage',
+          corejs: '2'
         }
       ],
-      require('@babel/preset-flow'),
+      [
+        require('@babel/preset-typescript'),
+        { allowSyntheticDefaultImports: true, isTSX: true, allExtensions: true }
+      ],
       [require('@babel/preset-react'), { development }]
     ],
     plugins: [
@@ -60,6 +67,9 @@ module.exports = api => {
       require('@babel/plugin-syntax-import-meta'),
       [require('@babel/plugin-proposal-class-properties'), { loose: true }],
       require('@babel/plugin-proposal-json-strings'),
+
+      // typescript
+      require('@babel/plugin-proposal-object-rest-spread'),
 
       ...(development ? developmentPlugins : productionPlugins)
     ]
