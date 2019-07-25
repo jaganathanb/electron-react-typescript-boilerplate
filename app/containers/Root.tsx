@@ -1,6 +1,7 @@
 import { ConnectedRouter } from 'connected-react-router';
 import { History } from 'history';
 import React, { Component } from 'react';
+import { hot } from 'react-hot-loader/root';
 import { Provider } from 'react-redux';
 import { Store } from '../reducers/types';
 import Routes from '../Routes';
@@ -10,7 +11,7 @@ interface Props {
   history: History;
 }
 
-export default class Root extends Component<Props> {
+class Root extends Component<Props> {
   public displayName: 'Root';
   public render() {
     const { store, history } = this.props;
@@ -23,3 +24,5 @@ export default class Root extends Component<Props> {
     );
   }
 }
+
+export default process.env.PLAIN_HMR ? Root : hot(Root);

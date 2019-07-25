@@ -28,7 +28,7 @@
     "prestart": "yarn build",
     "start": "cross-env NODE_ENV=production electron ./app/main.prod.js",
     "start-main-dev": "cross-env HOT=1 NODE_ENV=development electron -r ./internals/scripts/RegisterBabel.js ./app/main.dev.ts",
-    "start-renderer-dev": "cross-env NODE_ENV=development webpack-dev-server --hot --inline --config configs/webpack.config.renderer.dev.babel.ts",
+    "start-renderer-dev": "cross-env NODE_ENV=development webpack-dev-server --config configs/webpack.config.renderer.dev.babel.ts",
     "test": "cross-env NODE_ENV=test BABEL_DISABLE_CACHE=1 jest",
     "test-all": "yarn lint && yarn build && yarn test && yarn build-e2e && yarn test-e2e",
     "test-e2e": "node -r ./internals/scripts/RegisterBabel.js ./internals/scripts/CheckBuiltsExist.ts && cross-env NODE_ENV=test testcafe electron:./ ./test/e2e/HomePage.e2e.ts",
